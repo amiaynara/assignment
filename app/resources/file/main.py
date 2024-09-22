@@ -40,7 +40,13 @@ class FileViewSet(viewsets.ModelViewSet):
         result = self.execute_query(file_obj.uri, queries)
         response_data = {"initial_data": result, "analysis": file_obj.analysis.name}
         return Response(response_data)
-    
+
+    @action(detail=False, methods=["get"], url_path="test")
+    def test(self, request, **kwargs):
+        """Get initial data from the sqlite file"""
+        response_data = {"message": "HI there!"}
+        return Response(response_data)
+
     def get_query(self):
         '''Retuns the query to be executed on the file'''
         query = '''
