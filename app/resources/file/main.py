@@ -36,7 +36,7 @@ class FileViewSet(viewsets.ModelViewSet):
         offset = 0
         file_obj = self.get_object()
         # conf = self.get_config(config_file)
-        queries = self.get_query()
+        queries = self.get_queries()
         result = self.execute_query(file_obj.uri, queries)
         response_data = {"initial_data": result, "analysis": file_obj.analysis.name}
         return Response(response_data)
@@ -47,14 +47,21 @@ class FileViewSet(viewsets.ModelViewSet):
         response_data = {"message": "HI there!"}
         return Response(response_data)
 
-    def get_query(self):
+    def get_queries(self):
         '''Retuns the query to be executed on the file'''
-        query = '''
+        # list of queries
+        query = [
+            'PRAGMA table_info("sample")',
+            'PRAGMA table_info("ALT")',
+            'PRAGMA table_info("annotations")',
+            'PRAGMA table_info("variants")',
+            '''
             SELECT ALT.ALT_AF, ALT.alt_gene, ALT.ALT_TYPE, variants.INFO_DP, variants.CHROM, variants.POS, variants.ID, variants.REF, variants.QUAL, variants.VARIANT_ID, annotations.Annotation, annotations.Annotation_Impact, annotations.Gene_Name, annotations.Feature_Type, annotations.Feature_ID, annotations.Transcript_BioType, annotations."HGVS.p"
                         FROM variants
                         JOIN ALT ON variants.VARIANT_ID = ALT.VARIANT_ID JOIN annotations ON variants.VARIANT_ID = annotations.VARIANT_ID JOIN sample ON variants.VARIANT_ID = sample.VARIANT_ID
                         WHERE variants.VARIANT_ID IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100)
-            '''
+            ''',
+        ]
         return query
     
     def execute_query(self, file_uri, queries):
